@@ -1,0 +1,9 @@
+node_modules/
+__pycache__/
+.env
+.next/
+dist/
+.vscode/
+.DS_Store
+*.faiss
+*.log
