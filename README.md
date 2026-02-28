@@ -15,7 +15,7 @@
 
 | Layer | Technology |
 |-------|-----------|
-| Frontend | Next.js 14, Tiptap, Yjs, Tailwind CSS, Zustand |
+| Frontend | Next.js 15, Tiptap, Yjs, Tailwind CSS, Zustand |
 | Collaboration | HocusPocus, Yjs CRDT, WebSocket |
 | Backend | Node.js, Express, JWT, PostgreSQL, MongoDB, Redis |
 | AI Service | Python, FastAPI, Gemini 1.5 Flash, Sentence-Transformers, FAISS |
