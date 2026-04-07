@@ -51,6 +51,7 @@ def normalize_paper(raw: Dict[str, Any]) -> Dict[str, Any]:
         "paper_id": raw.get("paperId", ""),
         "title": raw.get("title", ""),
         "authors": authors,
+        "authors_str": authors,  # <-- add this line
         "year": raw.get("year") or 0,
         "venue": raw.get("venue") or "",
         "citation_count": raw.get("citationCount") or 0,

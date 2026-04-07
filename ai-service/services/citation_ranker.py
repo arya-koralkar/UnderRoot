@@ -1,10 +1,11 @@
 from typing import List, Dict, Any
 import numpy as np
 from sentence_transformers import SentenceTransformer
+from datetime import datetime
 from config import RANKING_MODEL
 
 _model = SentenceTransformer(RANKING_MODEL)
-_CURRENT_YEAR = 2024
+_CURRENT_YEAR = datetime.now().year
 
 
 def _recency_score(year: int) -> float:
