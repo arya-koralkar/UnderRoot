@@ -27,17 +27,6 @@ class CitationResponse(BaseModel):
 
 
 # Plagiarism schemas
-class PlagiarismRequest(BaseModel):
-    text: str
-    project_id: Optional[str] = None
-
-
-class PlagiarismMatch(BaseModel):
-    matched_text: str
-    source: str
-    similarity: float
-    start_index: int
-    end_index: int
 
 
 class SectionPlagiarism(BaseModel):
@@ -45,13 +34,6 @@ class SectionPlagiarism(BaseModel):
     overall_score: float
     severity: str  # low | moderate | high | critical
     matches: List[PlagiarismMatch]
-
-
-class PlagiarismResponse(BaseModel):
-    overall_score: float
-    severity: str
-    sections: List[SectionPlagiarism]
-    checked_at: str
 
 
 # Summary schemas
@@ -68,3 +50,43 @@ class SectionSummary(BaseModel):
 class SummaryResponse(BaseModel):
     section_summaries: List[SectionSummary]
     abstract_draft: str
+
+class SourceEvidence(BaseModel):
+    title: Optional[str] = None
+    url: Optional[str] = None
+    doi: Optional[str] = None
+    year: Optional[int] = None
+    provider: Optional[str] = None
+
+
+class PlagiarismMatch(BaseModel):
+    matched_text: str
+    source: SourceEvidence | str
+    similarity: float
+    start_index: int
+    end_index: int
+    source_index: Optional[int] = None
+    source_text: Optional[str] = None
+    source_layer: Optional[str] = None
+    candidate_source_indices: Optional[List[int]] = None
+    top_sources: Optional[List[SourceEvidence]] = None
+
+
+class PlagiarismSection(BaseModel):
+    section_title: str
+    overall_score: float
+    severity: str
+    matches: List[PlagiarismMatch]
+
+
+class PlagiarismRequest(BaseModel):
+    text: str
+    use_scholarly_sources: bool = True
+    per_source_limit: int = 15
+
+
+class PlagiarismResponse(BaseModel):
+    overall_score: float
+    severity: str
+    sections: List[PlagiarismSection]
+    checked_at: str
