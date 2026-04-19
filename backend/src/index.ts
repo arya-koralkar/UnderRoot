@@ -1,10 +1,17 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+<<<<<<< HEAD
 import { config } from "./config/env.js";
 import { connectMongo } from "./config/database.js";
 import citationRoutes from "./routes/citation.routes.js";
 import plagiarismRoutes from "./routes/plagiarism.routes.js";
+=======
+import { config } from "./config/env";
+import { connectMongo } from "./config/database";
+import citationRoutes from "./routes/citation.routes";
+import plagiarismRoutes from "./routes/plagiarism.routes";
+>>>>>>> ai-service-fix
 
 dotenv.config();
 

@@ -14,6 +14,7 @@ export function useCitation() {
     setError(null);
     try {
       const response = await citationAPI.suggest(text, projectId);
+<<<<<<< HEAD
       const payload = response.data;
 
       if (!payload.success) {
@@ -25,10 +26,19 @@ export function useCitation() {
       setResults((payload.data?.citations as CitationResult[]) || []);
     } catch {
       setError("Failed to fetch citations");
+=======
+      setResults(response.data.citations || []);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Failed to fetch citations");
+>>>>>>> ai-service-fix
     } finally {
       setLoading(false);
     }
   }, []);
 
   return { suggestCitations, results, loading, error };
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> ai-service-fix

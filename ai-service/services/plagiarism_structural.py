@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 from typing import List
+=======
+from typing import List, Dict, Any
+>>>>>>> ai-service-fix
 from simhash import Simhash
 
 
@@ -23,6 +27,7 @@ def structural_similarity(text1: str, text2: str, bits: int = 64) -> float:
     return 1.0 - distance / bits
 
 
+<<<<<<< HEAD
 def check_structural(sentences: List[str], corpus: List[str]) -> List[float]:
     """Compute structural similarity for each sentence against the reference corpus."""
     scores = []
@@ -33,3 +38,29 @@ def check_structural(sentences: List[str], corpus: List[str]) -> List[float]:
         max_sim = max(structural_similarity(sentence, ref) for ref in corpus)
         scores.append(max_sim)
     return scores
+=======
+def check_structural(sentences: List[str], corpus: List[str]) -> List[Dict[str, Any]]:
+    """Compute structural similarity with source index."""
+    results: List[Dict[str, Any]] = []
+    for sentence in sentences:
+        if not corpus:
+            results.append({"score": 0.0, "source_index": -1, "source_text": ""})
+            continue
+
+        best_score = -1.0
+        best_idx = -1
+        best_text = ""
+        for i, ref in enumerate(corpus):
+            sim = structural_similarity(sentence, ref)
+            if sim > best_score:
+                best_score = sim
+                best_idx = i
+                best_text = ref
+
+        results.append({
+            "score": float(best_score if best_score >= 0 else 0.0),
+            "source_index": best_idx,
+            "source_text": best_text,
+        })
+    return results
+>>>>>>> ai-service-fix
