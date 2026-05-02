@@ -1,6 +1,5 @@
 import axios from "axios";
 
-<<<<<<< HEAD
 export type ApiSuccess<T> = {
   success: true;
   data: T;
@@ -14,8 +13,6 @@ export type ApiError = {
 
 export type ApiResponse<T> = ApiSuccess<T> | ApiError;
 
-=======
->>>>>>> ai-service-fix
 const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:4000",
 });
@@ -23,22 +20,13 @@ const api = axios.create({
 api.interceptors.request.use((config) => {
   if (typeof window !== "undefined") {
     const token = localStorage.getItem("underroot_token");
-<<<<<<< HEAD
-    if (token) config.headers.Authorization = `Bearer ${token}`;
-=======
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
->>>>>>> ai-service-fix
   }
   return config;
 });
 
-<<<<<<< HEAD
-export const citationAPI = {
-  suggest: (text: string, projectId?: string) =>
-    api.post<ApiResponse<{ citations?: unknown[] }>>("/api/citations/suggest", { text, projectId }),
-=======
 export const authAPI = {
   login: (credential: string) =>
     api.post("/api/auth/google", { credential }),
@@ -59,19 +47,12 @@ export const projectAPI = {
 
 export const citationAPI = {
   suggest: (text: string, projectId?: string) =>
-    api.post("/api/citations/suggest", { text, projectId }),
->>>>>>> ai-service-fix
+    api.post<ApiResponse<{ citations?: unknown[] }>>("/api/citations/suggest", { text, projectId }),
 };
 
 export const plagiarismAPI = {
   check: (text: string, projectId?: string) =>
-<<<<<<< HEAD
     api.post<ApiResponse<unknown>>("/api/plagiarism/check", { text, projectId }),
-};
-
-export default api;
-=======
-    api.post("/api/plagiarism/check", { text, projectId }),
 };
 
 export const summaryAPI = {
@@ -89,4 +70,3 @@ export const exportAPI = {
 };
 
 export default api;
->>>>>>> ai-service-fix

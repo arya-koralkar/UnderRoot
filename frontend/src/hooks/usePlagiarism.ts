@@ -14,7 +14,6 @@ export function usePlagiarism() {
     setError(null);
     try {
       const response = await plagiarismAPI.check(text, projectId);
-<<<<<<< HEAD
       const payload = response.data;
 
       if (!payload.success) {
@@ -24,21 +23,12 @@ export function usePlagiarism() {
       }
 
       setResult(payload.data as PlagiarismResult);
-    } catch {
-      setError("Failed to check plagiarism");
-=======
-      setResult(response.data);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Failed to check plagiarism");
->>>>>>> ai-service-fix
     } finally {
       setLoading(false);
     }
   }, []);
 
   return { checkPlagiarism, result, loading, error };
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> ai-service-fix
