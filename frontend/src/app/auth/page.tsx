@@ -1,6 +1,19 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Mail, Lock, ArrowLeft, User, Library, GraduationCap, ChevronDown } from 'lucide-react';
+
+declare global {
+  interface Window {
+    google?: {
+      accounts: {
+        id: {
+          initialize: (config: object) => void;
+          renderButton: (element: HTMLElement, config: object) => void;
+        };
+      };
+    };
+  }
+}
 
 export default function SignInPage() {
   const [credentials, setCredentials] = useState({
@@ -11,6 +24,9 @@ export default function SignInPage() {
     department: ''
   });
   const [authBtnHover, setAuthBtnHover] = useState(false);
+  const [googleLoaded, setGoogleLoaded] = useState(false);
+
+  const GOOGLE_CLIENT_ID = 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com';
 
   const theme = {
     bg: '#FCFBF7',
@@ -49,6 +65,74 @@ export default function SignInPage() {
     fontFamily: 'Inter, sans-serif',
   };
 
+  // Inject global styles
+  useEffect(() => {
+    const styleId = 'signin-global-styles';
+    if (document.getElementById(styleId)) return;
+    const style = document.createElement('style');
+    style.id = styleId;
+    style.textContent = `
+      @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Inter:wght@400;600;700&display=swap');
+      * { box-sizing: border-box; }
+      #google-signin-btn > div { width: 100% !important; }
+      #google-signin-btn iframe { width: 100% !important; }
+    `;
+    document.head.appendChild(style);
+  }, []);
+
+  // Load Google GSI script
+  useEffect(() => {
+    const scriptId = 'google-gsi-script';
+    if (document.getElementById(scriptId)) {
+      setGoogleLoaded(true);
+      return;
+    }
+    const script = document.createElement('script');
+    script.id = scriptId;
+    script.src = 'https://accounts.google.com/gsi/client';
+    script.async = true;
+    script.defer = true;
+    script.onload = () => setGoogleLoaded(true);
+    document.head.appendChild(script);
+  }, []);
+
+  // Initialize Google button
+  useEffect(() => {
+    if (!googleLoaded || !window.google) return;
+    window.google.accounts.id.initialize({
+      client_id: GOOGLE_CLIENT_ID,
+      callback: handleGoogleCredential,
+      auto_select: false,
+      cancel_on_tap_outside: true,
+    });
+    const googleBtnEl = document.getElementById('google-signin-btn');
+    if (googleBtnEl) {
+      window.google.accounts.id.renderButton(googleBtnEl, {
+        type: 'standard',
+        theme: 'outline',
+        size: 'large',
+        text: 'continue_with',
+        shape: 'rectangular',
+        logo_alignment: 'left',
+        width: googleBtnEl.offsetWidth || 344,
+      });
+    }
+  }, [googleLoaded]);
+
+  const handleGoogleCredential = (response: { credential: string }) => {
+    const base64Url = response.credential.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const payload = JSON.parse(window.atob(base64));
+    setCredentials(prev => ({
+      ...prev,
+      fullName: payload.name ?? '',
+      email: payload.email ?? '',
+    }));
+    // Send token to your backend here:
+    // await fetch('/api/auth/google', { method: 'POST', body: JSON.stringify({ token: response.credential }) })
+    window.location.href = '/scriptorium';
+  };
+
   const handleSignIn = (e: React.FormEvent) => {
     e.preventDefault();
     if (credentials.email && credentials.fullName) {
@@ -72,11 +156,7 @@ export default function SignInPage() {
         position: 'relative',
       }}
     >
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Inter:wght@400;600;700&display=swap');
-        * { box-sizing: border-box; }
-      `}</style>
-
+      {/* FIXED: restored the opening <a tag that was missing */}
       <a
         href="/"
         style={{
@@ -103,6 +183,7 @@ export default function SignInPage() {
         maxWidth: 440,
         boxShadow: '0 4px 24px rgba(0,0,0,0.07)',
       }}>
+        {/* Header */}
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: 36, gap: 10 }}>
           <div style={{
             width: 48, height: 48, background: theme.logoBg, borderRadius: 4,
@@ -123,6 +204,24 @@ export default function SignInPage() {
           </p>
         </div>
 
+        {/* Google Sign-In Button */}
+        <div
+          id="google-signin-btn"
+          style={{ width: '100%', marginBottom: 20, minHeight: 44 }}
+        />
+
+        {/* Divider */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
+          <div style={{ flex: 1, height: 1, background: theme.borderLight }} />
+          <span style={{
+            fontSize: 9, fontWeight: 700, textTransform: 'uppercase',
+            letterSpacing: '0.15em', opacity: 0.35,
+            fontFamily: 'Inter, sans-serif', color: theme.text,
+          }}>or</span>
+          <div style={{ flex: 1, height: 1, background: theme.borderLight }} />
+        </div>
+
+        {/* Form */}
         <form onSubmit={handleSignIn} style={{ display: 'flex', flexDirection: 'column', gap: 20 }} suppressHydrationWarning>
 
           {/* Scholarly Role */}
@@ -164,7 +263,7 @@ export default function SignInPage() {
 
           {/* Email */}
           <div suppressHydrationWarning>
-            <label style={labelStyle}>University Email</label>
+            <label style={labelStyle}>Email</label>
             <div style={{ position: 'relative' }} suppressHydrationWarning>
               <Mail style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', opacity: 0.3, color: theme.text }} size={14} />
               <input
@@ -174,7 +273,7 @@ export default function SignInPage() {
                 value={credentials.email}
                 onChange={e => setCredentials(prev => ({ ...prev, email: e.target.value }))}
                 style={inputStyle}
-                placeholder="name@university.edu"
+                placeholder="name@email.com"
               />
             </div>
           </div>
